@@ -43,6 +43,7 @@ module.exports = function (grunt) {
         // store path to js original file names
         var originalJSFiles = grunt.file.expand(options.js.files);
         options.js.requireJsMainConfigFileOriginal = options.js.requireJsMainConfigFile;
+		var requireJsBasePath = path.dirname(options.js.requireJsMainConfigFile);
 
         // add hash to filename
         originalJSFiles.forEach(function(filename) {
@@ -64,24 +65,31 @@ module.exports = function (grunt) {
                 outPath = path.resolve(path.dirname(filename), new_name);
                 fs.renameSync(filename, outPath);
                 grunt.log.writeln('✔ '.green + filename + (' renamed to ').grey + relPath);
-                
+
+                // check if js file is stored in subfolder (relative to requirejs base path)
+                // if so, add subfolder path to module name
+                var requireJsFolder = "";
+                if (requireJsBasePath !== dest) {
+                	requireJsFolder = dest.replace(requireJsBasePath + "/", "") + "/";
+				}
+
                 // update requiresj define
                 var content = grunt.file.read(relPath);
-                var regex = "define\\((\"|\')" + path.basename(filename, ext) + "(\"|\')";
+                var regex = "define\\((\"|\')" + requireJsFolder.replace(/\//g, "\\/") + path.basename(filename, ext) + "(\"|\')";
                 var r = new RegExp(regex, "g");
                 if (content.search(r) !== -1) {
-                    content = content.replace(r, "define(\"" + path.basename(new_name, ext) + "\"");
+                    content = content.replace(r, "define(\"" + requireJsFolder + path.basename(new_name, ext) + "\"");
                     grunt.file.write(relPath, content);
                 }
 
                 // create requirejs map
-                jsMap[path.basename(filename, ext)] = path.basename(new_name, ext);
+                jsMap[requireJsFolder + path.basename(filename, ext)] = requireJsFolder + path.basename(new_name, ext);
                 if (filename.match(options.js.requireJsMainConfigFile)) {
                     options.js.requireJsMainConfigFile = relPath;
                 }
             }
         });
-        
+
         // create requirejs config map
         var requireMapConfig = "requirejs.config({ map: " + JSON.stringify({'*': jsMap}) + " });";
 
@@ -91,7 +99,7 @@ module.exports = function (grunt) {
             grunt.file.write(options.js.requireJsMainConfigFile, commonJsContent + "\n" + requireMapConfig);
             grunt.log.writeln("\n" + '✔ '.green + "Append new RequireJs path mapping " + '('.gray + options.js.requireJsMainConfigFile.gray  + ')'.gray);
         }
-        
+
         // replace path to commmon main file with hashed one
         // from:
         // <script data-main="somePath/JavaScript/" src="/somePath/JavaScript/common.js"></script>

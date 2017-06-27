@@ -28,6 +28,7 @@ grunt.initConfig({
         options: {
             js: {
                 // append hash to each JS file
+                // use pathToJsFolder/**/*.js to also parse subfolders
                 files: ['pathToJsFolder/*.js'],
                 // path to main requirejs file (included in html header)
                 requireJsMainConfigFile: 'pathToRequireJsMainConfigFile/common.js',
@@ -40,4 +41,5 @@ grunt.initConfig({
 ```
 
 ## Release History
-_(Nothing yet)_
+* Add support to hash js files in subfolder
+* Big bang

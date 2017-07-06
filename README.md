@@ -1,6 +1,6 @@
 # grunt-requirejs-hash-filenames
 
-> Add hash to each js filename and update RequireJs config to load those 'new' files. This task should be used after r.js optimization / 'production js build' is done.
+> Add hash to each filename and update RequireJs config to load those 'new' files. This task should be used after r.js optimization / 'production js build' is done.
 
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
@@ -26,12 +26,17 @@ In your project's Gruntfile, add a section named `requirejsHashFiles` to the dat
 grunt.initConfig({
     requirejsHashFiles: {
         options: {
-            js: {
-                // append hash to each JS file
-                // use pathToJsFolder/**/*.js to also parse subfolders
-                files: ['pathToJsFolder/*.js'],
+            task: {
+                // append hash to each file
+                // use pathTofile/**/*.js to also parse subfolders
+                files: ['pathTofile/*.js'],
+
+                // exclude files
+                excludeFiles: ['pathToExcludedFile/file']
+
                 // path to main requirejs file (included in html header)
                 requireJsMainConfigFile: 'pathToRequireJsMainConfigFile/common.js',
+
                 // replace path(s) to new main requirejs file
                 replaceRequireJsMainConfigFilePaths: ['replaceRequireJsMainConfigFilePaths/index.html']
             }
@@ -41,5 +46,6 @@ grunt.initConfig({
 ```
 
 ## Release History
+* Add exclude file option
 * Add support to hash js files in subfolder
 * Big bang

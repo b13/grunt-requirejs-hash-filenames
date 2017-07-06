@@ -36,7 +36,8 @@ module.exports = function (grunt) {
             js: {
                 requireJsMainConfigFile: '',
                 requireJsMainConfigFileOriginal: '',
-                replaceRequireJsMainConfigFilePaths: []
+                replaceRequireJsMainConfigFilePaths: [],
+				excludeFiles: []
             }
         });
 
@@ -54,7 +55,12 @@ module.exports = function (grunt) {
             var outPath;
             var relPath;
 
-            
+				// check if file is excluded
+			if (options.js.excludeFiles.indexOf(filename) !== -1) {
+				grunt.log.writeln("\n" + '✔ '.green + "Don't add hash to file: " + filename);
+				return false;
+			}
+
             if (filename.match(hash)) {
 
                 grunt.log.fail("filename are already hashed!");

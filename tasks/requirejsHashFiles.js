@@ -66,24 +66,23 @@ module.exports = function (grunt) {
                 fs.renameSync(filename, outPath);
                 grunt.log.writeln('✔ '.green + filename + (' renamed to ').grey + relPath);
 
-                // check if js file is stored in subfolder (relative to requirejs base path)
-                // if so, add subfolder path to module name
-                var requireJsFolder = "";
+                // get relative path to file (base: option.requireJsMainConfigFile)
+                var relativeDestPath = "";
                 if (requireJsBasePath !== dest) {
-                	requireJsFolder = dest.replace(requireJsBasePath + "/", "") + "/";
+                	relativeDestPath = path.relative(requireJsBasePath, dest) + "/";
 				}
 
-                // update requiresj define
+				// update requirejs define
                 var content = grunt.file.read(relPath);
-                var regex = "define\\((\"|\')" + requireJsFolder.replace(/\//g, "\\/") + path.basename(filename, ext) + "(\"|\')";
+                var regex = "define\\((\"|\')" + relativeDestPath.replace(/\//g, "\\/") + path.basename(filename, ext) + "(\"|\')";
                 var r = new RegExp(regex, "g");
                 if (content.search(r) !== -1) {
-                    content = content.replace(r, "define(\"" + requireJsFolder + path.basename(new_name, ext) + "\"");
+                    content = content.replace(r, "define(\"" + relativeDestPath + path.basename(new_name, ext) + "\"");
                     grunt.file.write(relPath, content);
                 }
 
                 // create requirejs map
-                jsMap[requireJsFolder + path.basename(filename, ext)] = requireJsFolder + path.basename(new_name, ext);
+                jsMap[relativeDestPath + path.basename(filename, ext)] = relativeDestPath + path.basename(new_name, ext);
                 if (filename.match(options.js.requireJsMainConfigFile)) {
                     options.js.requireJsMainConfigFile = relPath;
                 }

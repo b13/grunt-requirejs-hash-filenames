@@ -38,7 +38,10 @@ grunt.initConfig({
                 requireJsMainConfigFile: 'pathToRequireJsMainConfigFile/common.js',
 
                 // replace path(s) to new main requirejs file
-                replaceRequireJsMainConfigFilePaths: ['replaceRequireJsMainConfigFilePaths/index.html']
+                replaceRequireJsMainConfigFilePaths: ['replaceRequireJsMainConfigFilePaths/index.html'],
+
+                // if you want to use requirejs namespace, see: http://www.requirejs.org/docs/faq-optimization.html#namespace
+                requirejsNamespace: ''
             }
         }
     }

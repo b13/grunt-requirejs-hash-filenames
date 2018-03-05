@@ -97,8 +97,8 @@ module.exports = function (grunt) {
 		});
 
 		// create requirejs config map
-		var requireMapConfig = options.js.requirejsNamespace.length > 0 ? options.js.requirejsNamespace + "." : "";
-		requireMapConfig = "requirejs.config({ map: " + JSON.stringify({'*': jsMap}) + " });";
+		var requireMapConfig = options.js.requirejsNamespace && options.js.requirejsNamespace.length > 0 ? options.js.requirejsNamespace + "." : "";
+		requireMapConfig += "requirejs.config({ map: " + JSON.stringify({'*': jsMap}) + " });";
 
 		// add requirejs config mapping to main commen file
 		var commonJsContent = grunt.file.read(options.js.requireJsMainConfigFile);

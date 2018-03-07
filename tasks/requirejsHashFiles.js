@@ -68,6 +68,7 @@ module.exports = function (grunt) {
 
 			} else {
 
+				// rename files
 				relPath = [path.dirname(filename), new_name].join('/');
 				outPath = path.resolve(path.dirname(filename), new_name);
 				fs.renameSync(filename, outPath);
@@ -105,9 +106,23 @@ module.exports = function (grunt) {
 		if (commonJsContent) {
 			grunt.file.write(options.js.requireJsMainConfigFile, commonJsContent + "\n" + requireMapConfig);
 			grunt.log.writeln("\n" + '✔ '.green + "Append new RequireJs path mapping " + '('.gray + options.js.requireJsMainConfigFile.gray + ')'.gray);
+
+			// make sure to update common file hash after requirejs config mapping is added
+			var commonJsHash = createHash(options.js.requireJsMainConfigFile, options.algorithm, options.encoding).slice(0, options.length);
+			var commonJsExt = path.extname(options.js.requireJsMainConfigFile);
+			var newCommonJsFileName = [path.basename(options.js.requireJsMainConfigFileOriginal, commonJsExt), commonJsHash].join(options.separator) + commonJsExt;
+			var newCommonJsFileNameRelPath = [path.dirname(options.js.requireJsMainConfigFileOriginal), newCommonJsFileName].join('/');
+
+			// rename require js main config file
+			var newCommonJsFileNameOutPath = path.resolve(path.dirname(options.js.requireJsMainConfigFile), newCommonJsFileName);
+			fs.renameSync(options.js.requireJsMainConfigFile, newCommonJsFileNameOutPath);
+			grunt.log.writeln('✔ '.green + options.js.requireJsMainConfigFile + (' renamed to ').grey + newCommonJsFileNameRelPath);
+
+			grunt.log.writeln("\n" + '✔ '.green + "Update require js main config file hash " + '('.gray + options.js.requireJsMainConfigFile.gray + ' -> ' + newCommonJsFileNameRelPath.gray + ')'.gray);
+			options.js.requireJsMainConfigFile = newCommonJsFileNameRelPath;
 		}
 
-		// replace path to commmon main file with hashed one
+		// replace path to common main file with hashed one
 		// from:
 		// <script data-main="somePath/JavaScript/" src="/somePath/JavaScript/common.js"></script>
 		// to:
